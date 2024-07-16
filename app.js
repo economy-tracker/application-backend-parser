@@ -8,8 +8,8 @@ const catalog = require('./routes/catalog');
 const connection = mysql.createConnection({
     host: 'hackertone.cyyifb3uzhn6.ap-northeast-2.rds.amazonaws.com',
     port: '3306',
-    user: 'hackertone',
-    password: 'HtRm5micyyyLMjX',
+    user: '',
+    password: '',
     database: 'hackertone',
     charset: 'utf8mb4',  // character_set과 관련된 설정
     timezone: 'Asia/Seoul'  // time_zone 설정
