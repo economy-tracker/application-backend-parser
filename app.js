@@ -1,5 +1,5 @@
 require('dotenv').config();
-const he = require('he'); // 특수 문자열 처리를 위한 선언
+const he = require('he');
 const uuid = require('uuid');
 const mysql = require('mysql2');
 const parse = require('./routes/parse');
