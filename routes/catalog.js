@@ -10,7 +10,7 @@ async function get(title,info) {
         messages: [
           {
             role: "system",
-            content: "When I enter article information. ONLY Return the category among this list -> financial,stock, industry,business, mid-term,venture,  nature issue, real estate, global, economy, living economy, north-korea,local-economy, social , other . Do not add any other characters; print only the result.And if you're sure this isn't your topic, don't pick on the economy as often as possible. And set the topic with additional_data as the focus, not the title.(However, if additional_data information is insufficient, decide based on the title)"
+            content: "When I enter article information. ONLY Return the category among this list -> financial,stock, industry,business, mid-term,venture,  nature issue, real estate, global, economy, living economy, north-korea,local-economy, social , other . Do not add any other characters; print only the result.And if you're sure this isn't your topic, don't pick on the economy as often as possible. And set the topic with additional_data as the focus, not the title.(However, if additional_data information is insufficient, decide based on the title) Also, objectively evaluate the importance of the article from 0 to 10 and write it in [ ] at the end of the article. Only give high importance numbers to things that seem very important."
           },
           {
             role: "user",

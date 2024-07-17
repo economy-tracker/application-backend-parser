@@ -25,6 +25,13 @@ function cleanStr(htmlString) { //html 태그 삭제 및 QUOT; 제거하는 문�
     return withoutEntities;
 }
 
+const extractData = (inputString) => {
+    const numberMatch = inputString.match(/\[(\d+)\]/);
+    const catalog = inputString.replace(/\[\d+\]/, '').trim();
+    const important = numberMatch ? parseInt(numberMatch[1], 10) : null;
+    return { important, catalog };
+};
+
 function formatDate(inputDateStr) {
     let date = new Date(inputDateStr);
     let year = date.getFullYear();
@@ -56,13 +63,14 @@ connection.connect((err) => { // MySQL 서버에 연결
                 const queryPromise = catalog.get(article.title, article.description)
                 catalog.get(article.title, article.description)
                     .then(data => {
+                        const { important,catalog }= extractData(data);
                         if (sum < sum_target) {
                             sumdata = sumdata + " // 다음 기사 //" + cleanStr(article.title);
                             sum++;
                         }
                         const newUUID = uuid.v4(); // 랜덤 UUID 생성
-                        const insertQuery = 'INSERT INTO article (title,category,id,description,pub_date,link) VALUES (?, ?, ?, ?, ?, ?)';
-                        const insertValues = [cleanStr(article.title), cleanStr(data), newUUID, cleanStr(article.description), formatDate(article.pubDate), article.link];
+                        const insertQuery = 'INSERT INTO article (title,category,id,description,pub_date,link,important) VALUES (?, ?, ?, ?, ?, ?, ?)';
+                        const insertValues = [cleanStr(article.title), cleanStr(catalog), newUUID, cleanStr(article.description), formatDate(article.pubDate), article.link,important];
                         connection.query(insertQuery, insertValues, (err, result) => {
                             if (err) {
                                 console.error('Error inserting into database:', err);
