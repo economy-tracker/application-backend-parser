@@ -4,9 +4,12 @@ const uuid = require('uuid');
 const mysql = require('mysql2');
 const parse = require('./routes/parse');
 const catalog = require('./routes/catalog');
+const summary = require('./routes/summary');
 let sum = 0;
+let sumdata = "";
+const sum_target = 30; // n개의 기사의 데이터만 요약하도록 지정
 
-const connection = mysql.createConnection({
+const connection = mysql.createConnection({ //.env에서 DB정보 가져와서 연결설정
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
@@ -30,22 +33,33 @@ function formatDate(inputDateStr) {
     return `${year}-${month}-${day}`;
 }
 
-// MySQL 서버에 연결
-connection.connect((err) => {
+function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+}
+
+connection.connect((err) => { // MySQL 서버에 연결
     if (err) {
         console.error('error connecting: ' + err.stack);
         return;
     }
     sum = 0;
     console.log('connected as id ' + connection.threadId);
-    parse.article("경제", 100) //네이버 API 검색 제목 설정 , 검색 갯수 설정
+    parse.article("경제", 50) //네이버 API 검색 제목 설정 , 검색 갯수 설정
         .then(articles => {
             let queryPromises = [];
             for (const article of articles) {
                 const queryPromise = catalog.get(article.title, article.description)
                 catalog.get(article.title, article.description)
                     .then(data => {
-                        sum++;
+                        if (sum < sum_target) {
+                            sumdata = sumdata + " // 다음 기사 //" + cleanStr(article.title);
+                            sum++;
+                        }
                         const newUUID = uuid.v4(); // 랜덤 UUID 생성
                         const insertQuery = 'INSERT INTO article (title,category,id,description,pub_date,link) VALUES (?, ?, ?, ?, ?, ?)';
                         const insertValues = [cleanStr(article.title), cleanStr(data), newUUID, cleanStr(article.description), formatDate(article.pubDate), article.link];
@@ -60,14 +74,28 @@ connection.connect((err) => {
                     })
                     .catch(err => {
                         console.error('Error getting catalog data:', err);
-                    });
+                    });``
                 queryPromises.push(queryPromise);
             }
             Promise.all(queryPromises)
                 .then(() => {
                     setTimeout(() => {
+                        summary.sum(sumdata)
+                            .then(data => {
+                                const insertQuery = 'INSERT INTO summary (day, phrase) VALUES (?, ?)';
+                                const values = [getTodayDate(), data];
+
+                                connection.query(insertQuery, values, (error, results, fields) => {
+                                    if (error) {
+                                        console.error('Error inserting summary:', error.stack);
+                                        return;
+                                    }
+                                    console.log('summary inserted successfully:', results);
+                                    console.log(data)
+                                    connection.end();
+                                });
+                            })
                         console.log('All queries completed. Closing connection.');
-                        connection.end();
                     }, 1000)
 
                 })
