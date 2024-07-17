@@ -83,7 +83,7 @@ connection.connect((err) => { // MySQL 서버에 연결
                     })
                     .catch(err => {
                         console.error('Error getting catalog data:', err);
-                    });``
+                    });
                 queryPromises.push(queryPromise);
             }
             Promise.all(queryPromises)
