@@ -10,7 +10,7 @@ async function sum(data) {
       messages: [
         {
           role: "system",
-          content: "If I provide several articles, you provide me with a summary of the current Korean economy based on the articles in Korean in 20 hangul characters or less (more than 15 hangul characters). Sentences cannot end with ‘입니다.’ .And summarizes news that is slightly larger than trivial news"
+          content: "If I provide several articles, you provide me with a summary of the current Korean economy based on the articles in Korean in 20 hangul characters or less (more than 14 hangul characters). Sentences cannot end with ‘입니다.’ .And summarizes news that is slightly larger than trivial news"
         },
         {
           role: "user",

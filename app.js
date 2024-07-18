@@ -57,7 +57,7 @@ connection.connect((err) => { // MySQL 서버에 연결
     sum = 0;
     console.log('connected as id ' + connection.threadId);
     
-    parse.article("경제", 50) //네이버 API 검색 제목 설정 , 검색 갯수 설정
+    parse.article("경제", 100) //네이버 API 검색 제목 설정 , 검색 갯수 설정
         .then(articles => {
             let queryPromises = [];
             for (const article of articles) {
@@ -77,7 +77,8 @@ connection.connect((err) => { // MySQL 서버에 연결
                                 console.error('Error inserting into database:', err);
                                 return;
                             }
-                            console.log('Inserted article with ID:', result.insertId);
+                            console.log(result);
+                            console.log('Inserted article with UUID:',  newUUID);
                             console.log('Article title:', cleanStr(article.title));
                         });
                     })
